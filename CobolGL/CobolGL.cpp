@@ -178,18 +178,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	glLinkProgram(shader_programme);
 	
 	
-	Matrix4x4 mat = Matrix4x4::rotation(0, 0, 1.0f);
+	Matrix4x4 world_mat = Matrix4x4::rotation(0, 0, 1.0f);
+	
+	Matrix4x4 persp_mat = Matrix4x4::perspective(0.5f, 100.0f, 3.14/3, 4.0/3.0f);
 	float angle = 0.0f;
 	while (!glfwWindowShouldClose(window))
 	{
+
 		angle += 0.05f;
-		mat = Matrix4x4::rotation(0, angle, angle);
+		world_mat = Matrix4x4::rotation(0, 0, angle);
+		Matrix4x4 view_mat = Matrix4x4::lookat(Vector3f(0, 0, angle), Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 		_update_fps_counter(window);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
+		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
 		int matrix_location = glGetUniformLocation(shader_programme, "matrix");
 		glUseProgram(shader_programme);
-		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, mat.getMatrixData());
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, send_mat.getMatrixData());
 
 		glBindVertexArray(vao);
 		// draw points 0-3 from the currently bound VAO with current in-use shader
