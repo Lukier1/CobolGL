@@ -14,12 +14,13 @@
     <ProjectGuid>{8E50F876-C4A3-43A5-868F-B5460D5E87E6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CobolGL</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -38,13 +39,11 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros">
-    <NuGetPackageImportStamp>faae788b</NuGetPackageImportStamp>
-  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Lukier\Documents\Visual Studio 2013\Projects\CobolGL\CobolGL\libs\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Lukier\Documents\Visual Studio 2013\Projects\CobolGL\CobolGL\packages\glew.1.9.0.1\build\native\lib\v110\Win32\Debug\dynamic;C:\Users\Lukier\Documents\Visual Studio 2013\Projects\CobolGL\CobolGL\libs\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)libs\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)packages\glew.1.9.0.1\build\native\lib\v110\Win32\Debug\dynamic;$(SolutionDir)libs\libs\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -95,9 +94,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
     <None Include="Shaders\simpPink_frag.glsl" />
     <None Include="Shaders\simp_frag.glsl" />
     <None Include="Shaders\simp_vert.glsl">

@@ -121,6 +121,7 @@ public:
 	Matrix4x4 operator -(const Matrix4x4& oth) const;
 	Matrix4x4 operator *(const Matrix4x4& oth) const;
 
+	Matrix4x4 traspose() const;
 	Vec4 operator *(const Vec4& oth) const;
 	//TODO: Get from smaller matrix
 

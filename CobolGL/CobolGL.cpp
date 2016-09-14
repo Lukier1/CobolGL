@@ -57,12 +57,34 @@ std::string LoadTextFromFile(std::string filename)
 	}
 }
 
-
-
+float camAng = 0;
+float range = 2.0f;
+Vec3 camPos = Vector3f(0,0,2);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if (action == GLFW_PRESS)
+	{
+		if (key == GLFW_KEY_W)
+		{
+			range -= 1.0f;
+		}
+		if (key == GLFW_KEY_S)
+		{
+			range += 1.0f;
+		}
+		if (key == GLFW_KEY_D)
+		{
+			camAng += 3.14f/4;
+		}
+		if (key == GLFW_KEY_A)
+		{
+			camAng -= 3.14f/4;
+		}
+		camPos.v[0] = range*sin(camAng);
+		camPos.v[2] = range*cos(camAng);
+	}
 }
 
 void _update_fps_counter(GLFWwindow* window) {
@@ -103,6 +125,7 @@ float matrix[] = {
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	
 	GLFWwindow * window;
 	if (!glfwInit())
 		return -1;
@@ -168,9 +191,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	glShaderSource(fs, 1, &fragment_shader, NULL);
 	glCompileShader(fs);
 
-	glEnable(GL_CULL_FACE); // cull face
-	glCullFace(GL_BACK); // cull back face
-	glFrontFace(GL_CW); // GL_CCW for counter clock-wise
+	//glEnable(GL_CULL_FACE); // cull face
+	//glCullFace(GL_BACK); // cull back face
+	//glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
 	GLuint shader_programme = glCreateProgram();
 	glAttachShader(shader_programme, fs);
@@ -179,22 +202,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	
 	Matrix4x4 world_mat = Matrix4x4::rotation(0, 0, 1.0f);
+	Matrix4x4 persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14/2, 800.0/600.0f);
+	float angle = 1.0f;
 	
-	Matrix4x4 persp_mat = Matrix4x4::perspective(0.5f, 100.0f, 3.14/3, 4.0/3.0f);
-	float angle = 0.0f;
+	
+	
 	while (!glfwWindowShouldClose(window))
 	{
 
-		angle += 0.05f;
-		world_mat = Matrix4x4::rotation(0, 0, angle);
-		Matrix4x4 view_mat = Matrix4x4::lookat(Vector3f(0, 0, angle), Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+		angle += 0.0001f;
+		world_mat = Matrix4x4::rotation(0, 0, 0);
+		Matrix4x4 view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 		_update_fps_counter(window);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
 		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
+		Vec4 inp;
+		inp.v[0] = 0; inp.v[1] = 0; inp.v[2] = 0; inp.v[3] = 1;
+		Vec4 out = send_mat.traspose()*inp;
+
 		int matrix_location = glGetUniformLocation(shader_programme, "matrix");
 		glUseProgram(shader_programme);
-		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, send_mat.getMatrixData());
+		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, send_mat.getMatrixData());
 
 		glBindVertexArray(vao);
 		// draw points 0-3 from the currently bound VAO with current in-use shader

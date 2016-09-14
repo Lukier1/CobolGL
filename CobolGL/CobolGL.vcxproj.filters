@@ -40,9 +40,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Shaders\simp_vert.glsl" />
     <None Include="Shaders\simp_frag.glsl" />
     <None Include="Shaders\simpPink_frag.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -49,6 +49,7 @@ Matrix4x4 Matrix4x4::viewMatrix(const Vec<3> &forw, const Vec<3> &right, const V
 		-forw.v[0], -forw.v[1], -forw.v[2], -eye.v[2],
 		0,			0,			0,			1
 	};
+
 	return Matrix4x4(_v);
 }
 
@@ -80,7 +81,13 @@ Matrix4x4 Matrix4x4::perspective(float near, float far, float fov, float aspect)
 		0, 0, -(far + near) / (far - near), (-2 * far * near) / (far - near),
 		0, 0, -1, 0 
 	};
-	return Matrix4x4(_v);
+	float _v2[16] = {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, -1, 0
+	};
+	return Matrix4x4(_v2);
 }
 
 const float * Matrix4x4::getMatrixData() const {
@@ -138,4 +145,9 @@ Vec4 Matrix4x4::operator*(const Vec4& oth) const
 				v[4] * oth.v[0] + v[5] * oth.v[1] + v[6] * oth.v[2] + v[7] * oth.v[3],
 				v[8] * oth.v[0] + v[9] * oth.v[1] + v[10] * oth.v[2] + v[11] * oth.v[3], 
 				v[12] * oth.v[0] + v[13] * oth.v[1] + v[14] * oth.v[2] + v[15] * oth.v[3]);
+}
+Matrix4x4 Matrix4x4::traspose() const
+{
+	float out_v[] = { v[0], v[4], v[8], v[12], v[1], v[5], v[9], v[13], v[2], v[6], v[10], v[14], v[3], v[7], v[11], v[15] };
+	return Matrix4x4(out_v);
 }
