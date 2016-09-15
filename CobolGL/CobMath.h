@@ -88,6 +88,15 @@ struct Vec {
 		retirm vec;
 	}
 
+	float dot(const Vec<N> &oth) const {
+		float ret = 0.0f;
+		for (int i = 0; i < N; ++i)
+		{
+			ret += v[i] * oth.v[i];
+		}
+		return ret;
+	}
+
 	Vec<3> cross(const Vec<3> &oth) const {
 		return Vector3f(
 			v[1] * oth.v[2] - v[2] * oth.v[1], 

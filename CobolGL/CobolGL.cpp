@@ -58,8 +58,8 @@ std::string LoadTextFromFile(std::string filename)
 }
 
 float camAng = 0;
-float range = 2.0f;
-Vec3 camPos = Vector3f(0,0,2);
+float range = 3.0f;
+Vec3 camPos = Vector3f(0,0,3.0f);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -76,11 +76,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 		if (key == GLFW_KEY_D)
 		{
-			camAng += 3.14f/4;
+			camAng += 3.14f/4.0f;
 		}
 		if (key == GLFW_KEY_A)
 		{
-			camAng -= 3.14f/4;
+			camAng -= 3.14f/4.0f;
 		}
 		camPos.v[0] = range*sin(camAng);
 		camPos.v[2] = range*cos(camAng);
@@ -108,20 +108,17 @@ float points[] = {
 	0.5f, -0.5f, 0.0f,
 	-0.5f, -0.5f, 0.0f
 };
+float points_out[] = {
+	0.0f, 0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f,
+	-0.5f, -0.5f, 0.0f
+};
 float colours[] = {
 	1.0f, 0.0f, 0.0f,
 	0.0f, 1.0f, 0.0f,
 	0.0f, 0.0f, 1.0f
 };
 
-const double rot = 3.14/4;
-
-float matrix[] = {
-	1.0f*cos(rot), 0.0f - sin(rot), 0.0f, 0.5f, //first row
-	0.0f + sin(rot), 1.0f*cos(rot), 0.0f, 0.0f, // second row
-	0.0f, 0.0f, 1.0f, 0.0f, // third row
-	0.0f, 0.0f, 0.0f, 1.0f // fourth row
-};
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -201,26 +198,38 @@ int _tmain(int argc, _TCHAR* argv[])
 	glLinkProgram(shader_programme);
 	
 	
-	Matrix4x4 world_mat = Matrix4x4::rotation(0, 0, 1.0f);
-	Matrix4x4 persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14/2, 800.0/600.0f);
+	Matrix4x4 world_mat = Matrix4x4::rotation(0, 0, 0.0f);
+	Matrix4x4 persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14f/2.0f, 800.0/600.0f);
 	float angle = 1.0f;
 	
 	
 	
 	while (!glfwWindowShouldClose(window))
 	{
+		angle += 1.0f;
+		world_mat = Matrix4x4::translate(0, 0, 0)*Matrix4x4::rotation(0, angle/180.f* 3.14f, 0);
+		Matrix4x4 view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
+		Matrix4x4 send_mat2 = view_mat;
+		
+		for (int i = 0; i < 3; ++i)
+		{
+			Vec4 in_p;
+			in_p.v[0] = points[i * 3]; in_p.v[1] = points[i * 3 + 1]; in_p.v[2] = points[i * 3 + 2]; in_p.v[3] = 1.0f;
+			Vec4 out_m = world_mat*in_p;
+			Vec4 out_p = persp_mat*view_mat*world_mat*in_p;
+			points_out[i * 3] = out_p.v[0];
+			points_out[i * 3+1] = out_p.v[1];
+			points_out[i * 3 + 2] = out_p.v[2];
+
+		}
+		
 
 		angle += 0.0001f;
-		world_mat = Matrix4x4::rotation(0, 0, 0);
-		Matrix4x4 view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+		
 		_update_fps_counter(window);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
-		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
-		Vec4 inp;
-		inp.v[0] = 0; inp.v[1] = 0; inp.v[2] = 0; inp.v[3] = 1;
-		Vec4 out = send_mat.traspose()*inp;
-
 		int matrix_location = glGetUniformLocation(shader_programme, "matrix");
 		glUseProgram(shader_programme);
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, send_mat.getMatrixData());

@@ -49,7 +49,13 @@ Matrix4x4 Matrix4x4::viewMatrix(const Vec<3> &forw, const Vec<3> &right, const V
 		-forw.v[0], -forw.v[1], -forw.v[2], -eye.v[2],
 		0,			0,			0,			1
 	};
-
+	float _v2[16] =
+	{
+		1, 0, 0, -eye.v[0],
+		0, 1, 0, -eye.v[1],
+		0, 0, 1, -eye.v[2],
+		0, 0, 0, 1
+	};
 	return Matrix4x4(_v);
 }
 
@@ -58,16 +64,35 @@ Matrix4x4 Matrix4x4::lookat(const Vec<3> &eyepos, const Vec<3> &point, const Vec
 	f = point - eyepos;
 	f = f.normalizeVec3();
 	Vec3 u = up.normalizeVec3();
-	Vec3 r = f.cross(u);
-	return viewMatrix(f, r, eyepos, u);
+	Vec3 s = f.cross(u);
+
+
+	float T[16] =
+	{
+		1, 0, 0, -eyepos.v[0],
+		0, 1, 0, -eyepos.v[1],
+		0, 0, 1, -eyepos.v[2],
+		0, 0, 0, 1
+	};
+	float M[16] =
+	{
+		s.v[0], s.v[1], s.v[2], 0,
+		u.v[0], u.v[1], u.v[2], 0,
+		-f.v[0], -f.v[1], -f.v[2], 0,
+		0, 0, 0, 1
+	};
+	return Matrix4x4(M)*Matrix4x4(T);
 
 }
 Matrix4x4 Matrix4x4::rotation(float x, float y, float z)
+//x - alpha
+//y - beta
+//z - gamma
 {
 	float _v[16] = {
 		cos(y)*cos(z), cos(z)*sin(x)*sin(y) - cos(x)*sin(z), cos(x)*cos(z)*sin(y) + sin(x)*sin(z), 0,
 		cos(y)*sin(z), cos(x)*cos(z) + sin(x)*sin(y)*sin(z), -cos(z)*sin(x) + cos(x)*sin(y)*sin(z), 0,
-		-sin(x), cos(y)*sin(x), cos(x)*cos(y), 0,
+		-sin(y), cos(y)*sin(x), cos(x)*cos(y), 0,
 		0, 0, 0, 1 };
 	return Matrix4x4(_v);
 }
@@ -78,16 +103,10 @@ Matrix4x4 Matrix4x4::perspective(float near, float far, float fov, float aspect)
 	float _v[16] = {
 		near / ( range * aspect ), 0, 0, 0,
 		0, near / range, 0, 0,
-		0, 0, -(far + near) / (far - near), (-2 * far * near) / (far - near),
+		0, 0, -2 / (far - near), (far + near) / (far - near),
 		0, 0, -1, 0 
 	};
-	float _v2[16] = {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, -1, 0
-	};
-	return Matrix4x4(_v2);
+	return Matrix4x4(_v);
 }
 
 const float * Matrix4x4::getMatrixData() const {

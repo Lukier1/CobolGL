@@ -10,5 +10,7 @@ out vec3 colour;
 
 void main () {
   colour = vc;
-  gl_Position = matrix*vec4 (vp, 1.0);
+   gl_Position = matrix*vec4 (vp, 1.0);
+ // gl_Position = vec4((matrix*vec4 (vp, 1.0)).xyz, 1.0);
+  //gl_Position = vec4 (vp, 1.0);
 };
