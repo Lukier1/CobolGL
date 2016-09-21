@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-#include "CobMath.h"
+#include "Include/CobMath.h"
 class Log {
 private:
 	std::fstream file;
@@ -76,14 +76,52 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 		if (key == GLFW_KEY_D)
 		{
-			camAng += 3.14f/4.0f;
+			camAng += 3.14f/12.0f;
 		}
 		if (key == GLFW_KEY_A)
 		{
-			camAng -= 3.14f/4.0f;
+			camAng -= 3.14f/12.0f;
 		}
 		camPos.v[0] = range*sin(camAng);
 		camPos.v[2] = range*cos(camAng);
+	}
+}
+Matrix4x4 view_mat, persp_mat;
+
+struct Ray {
+	Vec3 ray_wor, ray_clip;
+	Ray(double mouse_x, double mouse_y)
+	{
+		float val[4];
+		val[0] = (2.0f* mouse_x) / 800 - 1.0f; // TODO: Add properties width/height
+		val[1] = (2.0f* mouse_y) / 600 - 1.0f;
+		val[2] = -1.0f;
+		val[3] = 1.0f;
+		Vec4 ray_clip4(val);
+		ray_clip = Vector3f(ray_clip4.v[0], ray_clip4.v[1], ray_clip4.v[2]);
+		Vec4 ray_eye = persp_mat.inverse()*ray_clip4;
+
+		ray_eye.v[2] = -1.0f;
+		ray_eye.v[3] = 0.0f;
+
+		Vec4 ray_wor4 = view_mat.inverse() * ray_eye;
+		ray_wor = Vector3f(ray_wor4.v[0], ray_wor4.v[1], ray_wor4.v[2]);
+		ray_wor = ray_wor.normalize();
+	}
+};
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
+{
+	double mouse_x, mouse_y;
+	glfwGetCursorPos(window, &mouse_x, &mouse_y);
+
+	if (action == GLFW_PRESS)
+	{
+		if (button == GLFW_MOUSE_BUTTON_1)
+		{
+			Ray ray(mouse_x, mouse_y);
+			std::cout << "Clicked " << mouse_x << " " << mouse_y << std::endl;
+		}
 	}
 }
 
@@ -108,11 +146,7 @@ float points[] = {
 	0.5f, -0.5f, 0.0f,
 	-0.5f, -0.5f, 0.0f
 };
-float points_out[] = {
-	0.0f, 0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	-0.5f, -0.5f, 0.0f
-};
+
 float colours[] = {
 	1.0f, 0.0f, 0.0f,
 	0.0f, 1.0f, 0.0f,
@@ -137,6 +171,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwMakeContextCurrent(window);
 
 	// start GLEW extension handler
@@ -171,9 +206,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
 	glVertexAttribBinding(1, 1);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
 	std::string sVert = LoadTextFromFile("Shaders/simp_vert.glsl");
 	std::string sFrag = LoadTextFromFile("Shaders/simp_frag.glsl");
 	std::string sFragPink = LoadTextFromFile("Shaders/simpPink_frag.glsl");
@@ -188,9 +220,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	glShaderSource(fs, 1, &fragment_shader, NULL);
 	glCompileShader(fs);
 
-	//glEnable(GL_CULL_FACE); // cull face
-	//glCullFace(GL_BACK); // cull back face
-	//glFrontFace(GL_CW); // GL_CCW for counter clock-wise
+	glEnable(GL_CULL_FACE); // cull face
+	glCullFace(GL_BACK); // cull back face
+	glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
 	GLuint shader_programme = glCreateProgram();
 	glAttachShader(shader_programme, fs);
@@ -199,7 +231,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	
 	Matrix4x4 world_mat = Matrix4x4::rotation(0, 0, 0.0f);
-	Matrix4x4 persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14f/2.0f, 800.0/600.0f);
+	persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14f/2.0f, 800.0/600.0f);
 	float angle = 1.0f;
 	
 	
@@ -207,23 +239,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	while (!glfwWindowShouldClose(window))
 	{
 		angle += 1.0f;
-		world_mat = Matrix4x4::translate(0, 0, 0)*Matrix4x4::rotation(0, angle/180.f* 3.14f, 0);
-		Matrix4x4 view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+		Quaterion rot(angle / 180.0f*3.14f, Vector3f(0, 1.0, 1.0).normalize());
+		world_mat = Matrix4x4::translate(0, 0, 0)*rot.getMatrix();
+		view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
-		Matrix4x4 send_mat2 = view_mat;
-		
-		for (int i = 0; i < 3; ++i)
-		{
-			Vec4 in_p;
-			in_p.v[0] = points[i * 3]; in_p.v[1] = points[i * 3 + 1]; in_p.v[2] = points[i * 3 + 2]; in_p.v[3] = 1.0f;
-			Vec4 out_m = world_mat*in_p;
-			Vec4 out_p = persp_mat*view_mat*world_mat*in_p;
-			points_out[i * 3] = out_p.v[0];
-			points_out[i * 3+1] = out_p.v[1];
-			points_out[i * 3 + 2] = out_p.v[2];
-
-		}
-		
 
 		angle += 0.0001f;
 		

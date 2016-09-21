@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "CobMath.h"
+#include "Include/CobMath.h"
 
 Vec3 Vector3f(float x, float y, float z) {
 	float v[] = { x, y, z };
@@ -170,3 +170,236 @@ Matrix4x4 Matrix4x4::traspose() const
 	float out_v[] = { v[0], v[4], v[8], v[12], v[1], v[5], v[9], v[13], v[2], v[6], v[10], v[14], v[3], v[7], v[11], v[15] };
 	return Matrix4x4(out_v);
 }
+
+Matrix4x4 Matrix4x4::inverse() const
+{
+	float inv[16], det;
+
+	inv[0] = v[5] * v[10] * v[15] -
+		v[5] * v[11] * v[14] -
+		v[9] * v[6] * v[15] +
+		v[9] * v[7] * v[14] +
+		v[13] * v[6] * v[11] -
+		v[13] * v[7] * v[10];
+
+	inv[4] = -v[4] * v[10] * v[15] +
+		v[4] * v[11] * v[14] +
+		v[8] * v[6] * v[15] -
+		v[8] * v[7] * v[14] -
+		v[12] * v[6] * v[11] +
+		v[12] * v[7] * v[10];
+
+	inv[8] = v[4] * v[9] * v[15] -
+		v[4] * v[11] * v[13] -
+		v[8] * v[5] * v[15] +
+		v[8] * v[7] * v[13] +
+		v[12] * v[5] * v[11] -
+		v[12] * v[7] * v[9];
+
+	inv[12] = -v[4] * v[9] * v[14] +
+		v[4] * v[10] * v[13] +
+		v[8] * v[5] * v[14] -
+		v[8] * v[6] * v[13] -
+		v[12] * v[5] * v[10] +
+		v[12] * v[6] * v[9];
+
+	inv[1] = -v[1] * v[10] * v[15] +
+		v[1] * v[11] * v[14] +
+		v[9] * v[2] * v[15] -
+		v[9] * v[3] * v[14] -
+		v[13] * v[2] * v[11] +
+		v[13] * v[3] * v[10];
+
+	inv[5] = v[0] * v[10] * v[15] -
+		v[0] * v[11] * v[14] -
+		v[8] * v[2] * v[15] +
+		v[8] * v[3] * v[14] +
+		v[12] * v[2] * v[11] -
+		v[12] * v[3] * v[10];
+
+	inv[9] = -v[0] * v[9] * v[15] +
+		v[0] * v[11] * v[13] +
+		v[8] * v[1] * v[15] -
+		v[8] * v[3] * v[13] -
+		v[12] * v[1] * v[11] +
+		v[12] * v[3] * v[9];
+
+	inv[13] = v[0] * v[9] * v[14] -
+		v[0] * v[10] * v[13] -
+		v[8] * v[1] * v[14] +
+		v[8] * v[2] * v[13] +
+		v[12] * v[1] * v[10] -
+		v[12] * v[2] * v[9];
+
+	inv[2] = v[1] * v[6] * v[15] -
+		v[1] * v[7] * v[14] -
+		v[5] * v[2] * v[15] +
+		v[5] * v[3] * v[14] +
+		v[13] * v[2] * v[7] -
+		v[13] * v[3] * v[6];
+
+	inv[6] = -v[0] * v[6] * v[15] +
+		v[0] * v[7] * v[14] +
+		v[4] * v[2] * v[15] -
+		v[4] * v[3] * v[14] -
+		v[12] * v[2] * v[7] +
+		v[12] * v[3] * v[6];
+
+	inv[10] = v[0] * v[5] * v[15] -
+		v[0] * v[7] * v[13] -
+		v[4] * v[1] * v[15] +
+		v[4] * v[3] * v[13] +
+		v[12] * v[1] * v[7] -
+		v[12] * v[3] * v[5];
+
+	inv[14] = -v[0] * v[5] * v[14] +
+		v[0] * v[6] * v[13] +
+		v[4] * v[1] * v[14] -
+		v[4] * v[2] * v[13] -
+		v[12] * v[1] * v[6] +
+		v[12] * v[2] * v[5];
+
+	inv[3] = -v[1] * v[6] * v[11] +
+		v[1] * v[7] * v[10] +
+		v[5] * v[2] * v[11] -
+		v[5] * v[3] * v[10] -
+		v[9] * v[2] * v[7] +
+		v[9] * v[3] * v[6];
+
+	inv[7] = v[0] * v[6] * v[11] -
+		v[0] * v[7] * v[10] -
+		v[4] * v[2] * v[11] +
+		v[4] * v[3] * v[10] +
+		v[8] * v[2] * v[7] -
+		v[8] * v[3] * v[6];
+
+	inv[11] = -v[0] * v[5] * v[11] +
+		v[0] * v[7] * v[9] +
+		v[4] * v[1] * v[11] -
+		v[4] * v[3] * v[9] -
+		v[8] * v[1] * v[7] +
+		v[8] * v[3] * v[5];
+
+	inv[15] = v[0] * v[5] * v[10] -
+		v[0] * v[6] * v[9] -
+		v[4] * v[1] * v[10] +
+		v[4] * v[2] * v[9] +
+		v[8] * v[1] * v[6] -
+		v[8] * v[2] * v[5];
+
+	det = v[0] * inv[0] + v[1] * inv[4] + v[2] * inv[8] + v[3] * inv[12];
+
+	if (det == 0)
+		return *this;
+
+	det = 1.0 / det;
+
+	for (int i = 0; i < 16; i++)
+		inv[i] = inv[i] * det;
+
+	return Matrix4x4(inv);
+}
+
+
+
+Quaterion::Quaterion(float angle_rad, float x, float y, float z) {
+	q[0] = cos(angle_rad / 2.0f);
+	q[1] = sin(angle_rad / 2.0f)*x;
+	q[2] = sin(angle_rad / 2.0f)*y;
+	q[3] = sin(angle_rad / 2.0f)*z;
+}
+
+Quaterion::Quaterion(float angle_rad, Vec3 axis) : Quaterion(angle_rad, axis.v[0], axis.v[1], axis.v[2])
+{
+
+}
+
+Quaterion::Quaterion() {
+	q[0] = 0;
+	q[1] = 0;
+	q[2] = 0;
+	q[3] = 0;
+}
+
+Quaterion Quaterion::operator + (const Quaterion& oth) const {
+	return Quaterion();
+}
+Quaterion Quaterion::operator - (const Quaterion& oth) const {
+	return Quaterion();
+}
+Quaterion Quaterion::operator * (const Quaterion& oth) const {
+	Quaterion t;
+	t.q[0] = q[0] * oth.q[0] - q[1] * oth.q[1] - q[2] * oth.q[2] - q[3] * oth.q[3];
+	t.q[1] = q[1] * oth.q[0] - q[0] * oth.q[1] - q[3] * oth.q[2] - q[2] * oth.q[3];
+	t.q[2] = q[2] * oth.q[0] - q[3] * oth.q[1] - q[0] * oth.q[2] - q[1] * oth.q[3];
+	t.q[3] = q[3] * oth.q[0] - q[2] * oth.q[1] - q[1] * oth.q[2] - q[0] * oth.q[3];
+
+	return t;
+}
+float Quaterion::dot(const Quaterion& oth) const {
+	return q[0] * oth.q[0] + q[1] * oth.q[1] + q[2] * oth.q[2] + q[3] * oth.q[3];
+}
+Quaterion Quaterion::slerp(const Quaterion& q, const Quaterion& r, float t) {
+	float dp = q.dot(r);
+
+	if (fabs(dp) >= 1.0f) {
+		return q;
+	}
+
+	float sin_omega = sqrt(1.0f - dp*dp);
+	Quaterion res;
+	if (fabs(sin_omega) < 0.001f)
+	{
+		for (int i = 0; i < 4; ++i) {
+			res.q[i] = (1.0f - t) * q.q[i] + t*r.q[i];
+		}
+		return res;
+	}
+
+	float omega = acos(dp);
+	float a = sin(1.0f - t * omega) / sin_omega;
+	float b = sin(t * omega) / sin_omega;
+	for (int i = 0; i < 4; ++i)
+	{
+		res.q[i] = q.q[i] * a + r.q[i] * b;
+	}
+
+	return res;
+}
+
+Quaterion Quaterion::normalise(const Quaterion &v) {
+	float m = v.length();
+	Quaterion res;
+	res.q[0] = v.q[0] / m;
+	res.q[1] = v.q[1] / m;
+	res.q[2] = v.q[2] / m;
+	res.q[3] = v.q[3] / m;
+	return res;
+}
+
+Quaterion Quaterion::normalise() const {
+	return Quaterion::normalise(*this);
+}
+
+Matrix4x4  Quaterion::getMatrix() const {
+	/*float _v[16] =
+	{
+		1 - 2 * y * y - 2 * z*z, 2 * x*y - 2 * w*z, 2 * x*z + 2 * w*y, 0,
+		2 * x*y + 2 * w*z, 1 - 2 * x*x - 2 * z*z, 2*y*z - 2 * w*x, 0,
+		2 * x*z - 2 * w*y, 2*y*z + 2 * w * x, 1- 2*x*x - 2*y*y, 0,
+		0,0,0,1
+	}; */
+	float _v[16] =
+	{
+		1 - 2 * q[2] * q[2] - 2 * q[3]*q[3], 2 * q[1]*q[2] - 2 * q[0]*q[3], 2 * q[1]*q[3] + 2 * q[0]*q[2], 0,
+		2 * q[1]*q[2] + 2 * q[0]*q[3], 1 - 2 * q[1]*q[1] - 2 * q[3]*q[3], 2 * q[2]*q[3] - 2 * q[0]*q[1], 0,
+		2 * q[1]*q[3] - 2 * q[0]*q[2], 2 * q[2]*q[3] + 2 * q[0] * q[1], 1 - 2 * q[1]*q[1] - 2 * q[2]*q[2], 0,
+		0, 0, 0, 1
+	};
+	return Matrix4x4(_v);
+}
+
+float Quaterion::length() const {
+	return sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2]);
+}
+

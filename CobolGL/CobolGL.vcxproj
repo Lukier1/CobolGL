@@ -112,7 +112,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CobMath.h" />
+    <ClInclude Include="Include\CobMath.h" />
+    <ClInclude Include="Include\Math\Matrix.h" />
+    <ClInclude Include="Include\Math\Quaterion.h" />
+    <ClInclude Include="Include\Math\Vec.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
