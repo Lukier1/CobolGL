@@ -104,7 +104,9 @@ struct Vec {
 			v[0] * oth.v[1] - v[1] * oth.v[0]
 			);
 	}
-
+	const float * getData() const {
+		return v;
+	}
 };
 
 typedef Vec<3> Vec3;

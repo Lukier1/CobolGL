@@ -15,4 +15,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <FreeImage.h>
+#include "Include\Logger.h"
+
 // TODO: reference additional headers your program requires here

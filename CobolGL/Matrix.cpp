@@ -286,7 +286,7 @@ Matrix4x4 Matrix4x4::inverse() const
 	if (det == 0)
 		return *this;
 
-	det = 1.0 / det;
+	det = 1.0f / det;
 
 	for (int i = 0; i < 16; i++)
 		inv[i] = inv[i] * det;

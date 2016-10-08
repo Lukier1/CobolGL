@@ -24,8 +24,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG_LAPTOP|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -56,7 +56,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)libs\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)packages\glew.1.9.0.1\build\native\lib\v110\Win32\Debug\dynamic;$(SolutionDir)libs\libs\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)libs\libs\FreeImage;$(SolutionDir)packages\glew.1.9.0.1\build\native\lib\v110\Win32\Debug\dynamic;$(SolutionDir)libs\libs\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG_LAPTOP|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -69,14 +69,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew.lib;freeimage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG_LAPTOP|Win32'">
@@ -113,15 +113,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CobMath.h" />
+    <ClInclude Include="Include\Exceptions\IOException.h" />
+    <ClInclude Include="Include\Logger.h" />
     <ClInclude Include="Include\Math\Matrix.h" />
     <ClInclude Include="Include\Math\Quaterion.h" />
     <ClInclude Include="Include\Math\Vec.h" />
+    <ClInclude Include="Include\Resource.h" />
+    <ClInclude Include="Include\ShaderProgram.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CobolGL.cpp" />
     <ClCompile Include="CobMath.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Quaterion.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -135,6 +141,8 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Shaders\light_frag.glsl" />
+    <None Include="Shaders\light_vert.glsl" />
     <None Include="Shaders\simpPink_frag.glsl" />
     <None Include="Shaders\simp_frag.glsl" />
     <None Include="Shaders\simp_vert.glsl">

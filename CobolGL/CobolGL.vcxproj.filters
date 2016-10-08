@@ -13,8 +13,19 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\CobMath">
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{ad42ee80-d434-4811-a72d-421b5a884fc5}</UniqueIdentifier>
+      <Extensions>*Math\*</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Math">
       <UniqueIdentifier>{4d0b15c0-0f54-4b17-9243-2d2e5a4b927d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d5c75912-e815-4cd1-a01e-7886af204620}</UniqueIdentifier>
+      <Extensions>.glsl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Exceptions">
+      <UniqueIdentifier>{d6ab1264-7a23-4f15-8ebc-992bc5859577}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -31,12 +42,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Math\Matrix.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Include\Math\Quaterion.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Include\Math\Vec.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Exceptions\IOException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,19 +74,37 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vec.cpp">
-      <Filter>Source Files\CobMath</Filter>
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Quaterion.cpp">
-      <Filter>Source Files\CobMath</Filter>
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Matrix.cpp">
-      <Filter>Source Files\CobMath</Filter>
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\simp_vert.glsl" />
-    <None Include="Shaders\simp_frag.glsl" />
-    <None Include="Shaders\simpPink_frag.glsl" />
     <None Include="packages.config" />
+    <None Include="Shaders\light_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\simp_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\simp_vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\simpPink_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\light_vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
