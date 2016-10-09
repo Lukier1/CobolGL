@@ -19,6 +19,7 @@
 #include <string>
 #include <memory>
 #include <FreeImage.h>
+#include <map>
 #include "Include\Logger.h"
 
 // TODO: reference additional headers your program requires here

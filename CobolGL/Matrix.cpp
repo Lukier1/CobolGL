@@ -43,13 +43,7 @@ Matrix4x4 Matrix4x4::viewMatrix(const Vec<3> &forw, const Vec<3> &right, const V
 		-forw.v[0], -forw.v[1], -forw.v[2], -eye.v[2],
 		0, 0, 0, 1
 	};
-	float _v2[16] =
-	{
-		1, 0, 0, -eye.v[0],
-		0, 1, 0, -eye.v[1],
-		0, 0, 1, -eye.v[2],
-		0, 0, 0, 1
-	};
+	
 	return Matrix4x4(_v);
 }
 
@@ -97,7 +91,7 @@ Matrix4x4 Matrix4x4::perspective(float near, float far, float fov, float aspect)
 	float _v[16] = {
 		near / (range * aspect), 0, 0, 0,
 		0, near / range, 0, 0,
-		0, 0, -2 / (far - near), (far + near) / (far - near),
+		0, 0, -2 / (far - near),-(far + near) / (far - near),
 		0, 0, -1, 0
 	};
 	return Matrix4x4(_v);

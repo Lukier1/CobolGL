@@ -92,6 +92,30 @@ void ShaderProgram::Release() {
 		}
 	}
 }
+
+void ShaderProgram::apply(std::string locator, const Matrix4x4 &mat) {
+	GLuint matrix_location = glGetUniformLocation(programId, locator.c_str());
+	glUniformMatrix4fv(matrix_location, 1, GL_TRUE, mat.getMatrixData());
+}
+void ShaderProgram::apply(std::string locator, const Vec3 &vec) {
+	GLuint location = glGetUniformLocation(programId, locator.c_str());
+	glUniform3fv(location, 1, vec.getData());
+}
+void ShaderProgram::apply(std::string locator, float val) {
+	
+	GLuint location = glGetUniformLocation(programId, locator.c_str());
+	glUniform1f(location, val);
+
+}
+void ShaderProgram::applyTexture(std::string locator, GLuint texId) {
+	GLuint location = glGetUniformLocation(programId, locator.c_str());
+	glUniform1i(location, texId);
+}
+
+void ShaderProgram::UseProgram()
+{
+	glUseProgram(programId);
+}
 ShaderProgram::~ShaderProgram() {
 	Release();
 }

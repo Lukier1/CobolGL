@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Resource.h"
-
+#include "Math\Matrix.h"
+#include "Math\Vec.h"
 class ShaderProgram : public Resource
 {
 public:
@@ -17,11 +18,17 @@ public:
 	void GenerateProgram();
 	bool IsProgramGenerated() const;
 	
+	void UseProgram();
 	GLuint getProgramId() const;
 	GLuint glGetShaderId(SHADER_TYPE type) const;
 
 	void Release();
 	~ShaderProgram();
+
+	void apply(std::string locator, const Matrix4x4 &mat);
+	void apply(std::string locator, const Vec3 &vec);
+	void apply(std::string locator, float val);
+	void applyTexture(std::string locator, GLuint texId);
 private:
 	static const unsigned short TYPE_COUNT = 2;
 

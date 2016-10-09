@@ -56,7 +56,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)libs\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)libs\libs\FreeImage;$(SolutionDir)packages\glew.1.9.0.1\build\native\lib\v110\Win32\Debug\dynamic;$(SolutionDir)libs\libs\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)libs\libs\Assimp\Debug;$(SolutionDir)libs\libs\FreeImage;$(SolutionDir)packages\glew.1.9.0.1\build\native\lib\v110\Win32\Debug\dynamic;$(SolutionDir)libs\libs\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG_LAPTOP|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -76,7 +76,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew.lib;freeimage.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew.lib;freeimage.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG_LAPTOP|Win32'">
@@ -118,6 +118,7 @@
     <ClInclude Include="Include\Math\Matrix.h" />
     <ClInclude Include="Include\Math\Quaterion.h" />
     <ClInclude Include="Include\Math\Vec.h" />
+    <ClInclude Include="Include\Mesh.h" />
     <ClInclude Include="Include\Resource.h" />
     <ClInclude Include="Include\ShaderProgram.h" />
     <ClInclude Include="stdafx.h" />

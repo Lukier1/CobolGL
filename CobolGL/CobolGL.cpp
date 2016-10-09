@@ -5,7 +5,7 @@
 #include "Include/CobMath.h"
 #include "Include\ShaderProgram.h"
 #include "Include\Exceptions\IOException.h"
-
+#include "Include\Mesh.h"
 void glfw_error_callback(int error, const char* description) {
 	Logger::getLogger()->gl_log(error, description);
 }
@@ -93,50 +93,99 @@ void _update_fps_counter(GLFWwindow* window) {
 	}
 	frame_count++;
 }
+void APIENTRY debug_gl_callback(GLenum source, GLenum type, GLuint id, GLenum severity, 
+						GLsizei length, const GLchar* message, GLvoid* userParam
+	) {
+	char src_str[2048]; /* source */
+	char type_str[2048]; /* type */
+	char sev_str[2048]; /* severity */
 
-float points[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.5f, 0.5f, 0.0f,
-	0.5f, 0.5f, 0.0f,
-	-0.5f, 0.5f, 0.0f,
-	-0.5f, -0.5f, 0.0f
-};
+	switch (source) {
+	case 0x8246:
+		strcpy(src_str, "API");
+		break;
+	case 0x8247:
+		strcpy(src_str, "WINDOW_SYSTEM");
+		break;
+	case 0x8248:
+		strcpy(src_str, "SHADER_COMPILER");
+		break;
+	case 0x8249:
+		strcpy(src_str, "THIRD_PARTY");
+		break;
+	case 0x824A:
+		strcpy(src_str, "APPLICATION");
+		break;
+	case 0x824B:
+		strcpy(src_str, "OTHER");
+		break;
+	default:
+		strcpy(src_str, "undefined");
+		break;
+	}
 
-float normals[] = {
-	0.0f, 0.0f, 1.0f,
-	0.0f, 0.0f, 1.0f,
-	0.0f, 0.0f, 1.0f,
-	0.0f, 0.0f, 1.0f,
-	0.0f, 0.0f, 1.0f,
-	0.0f, 0.0f, 1.0f
-};
+	switch (type) { //type
+	case 0x824C:
+		strcpy(type_str, "ERROR");
+		break;
+	case 0x824D:
+		strcpy(type_str, "DEPRECATED_BEHAVIOR");
+		break;
+	case 0x824E:
+		strcpy(type_str, "UNDEFINED_BEHAVIOR");
+		break;
+	case 0x824F:
+		strcpy(type_str, "PORTABILITY");
+		break;
+	case 0x8250:
+		strcpy(type_str, "PERFORMANCE");
+		break;
+	case 0x8251:
+		strcpy(type_str, "OTHER");
+		break;
+	case 0x8268:
+		strcpy(type_str, "MARKER");
+		break;
+	case 0x8269:
+		strcpy(type_str, "PUSH_GROUP");
+		break;
+	case 0x826A:
+		strcpy(type_str, "POP_GROUP");
+		break;
+	default:
+		strcpy(type_str, "undefined");
+		break;
+	}
 
-float texcoords[] = {
-	0.0f, 0.0f,
-	1.0f, 0.0f,
-	1.0f, 1.0f,
-	1.0f, 1.0f,
-	0.0f, 1.0f,
-	0.0f, 0.0f
-};
+	switch (severity) {
+	case 0x9146:
+		strcpy(sev_str, "HIGH");
+		break;
+	case 0x9147:
+		strcpy(sev_str, "MEDIUM");
+		break;
+	case 0x9148:
+		strcpy(sev_str, "LOW");
+		break;
+	case 0x826B:
+		strcpy(sev_str, "NOTIFICATION");
+		break;
+	default:
+		strcpy(sev_str, "undefined");
+		break;
+	}
 
-void applyMatrix(std::string location, GLuint shaderProgram, const float * matrixData)
-{
-	int matrix_location = glGetUniformLocation(shaderProgram, location.c_str());
-	glUniformMatrix4fv(matrix_location, 1, GL_TRUE, matrixData);
-}
-
-void applyVec3(std::string location, GLuint shaderProgram, const float * vecData)
-{
-	int vec_location = glGetUniformLocation(shaderProgram, location.c_str());
-	glUniform3fv(vec_location, 1, vecData);
-}
-
-void applyFloat(std::string location, GLuint shaderProgram,  float val)
-{
-	int vec_location = glGetUniformLocation(shaderProgram, location.c_str());
-	glUniform1f(vec_location, val);
+	fprintf(
+		stderr,
+		"source: %s type: %s id: %u severity: %s length: %i message: %s userParam: %i\n",
+		src_str,
+		type_str,
+		id,
+		sev_str,
+		length,
+		message,
+		*(int*)userParam
+		);
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -158,10 +207,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwMakeContextCurrent(window);
-
+	
 	// start GLEW extension handler
 	glewExperimental = GL_TRUE;
 	glewInit();
+
+
+
+	if (GLEW_KHR_debug) {
+		int param = -1;
+		printf("KHR_debug extension found\n");
+		glDebugMessageCallback(debug_gl_callback, &param);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		printf("debug callback engaged\n");
+	}
+	else {
+		printf("KHR_debug extension NOT found\n");
+	}
 
 	// get version info
 	const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
@@ -169,35 +231,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf("Renderer: %s\n", renderer);
 	printf("OpenGL version supported %s\n", version);
 
-	GLuint vbo = 0;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), points, GL_STATIC_DRAW);
-	GLuint colours_vbo = 0;
-	glGenBuffers(1, &colours_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
-	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), normals, GL_STATIC_DRAW);
-	GLuint tc_vbo = 0;
-	glGenBuffers(1, &tc_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, tc_vbo);
-	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), texcoords, GL_STATIC_DRAW);
-
-
-	GLuint vao = 0;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
-	glBindVertexBuffer(0, vbo, 0, 3 * sizeof(GL_FLOAT));
-	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE,0);
-	glVertexAttribBinding(0, 0);
-	glEnableVertexAttribArray(1);
-	glBindVertexBuffer(1, colours_vbo, 0, 3 * sizeof(GL_FLOAT));
-	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
-	glVertexAttribBinding(1, 1);
-	glEnableVertexAttribArray(2);
-	glBindVertexBuffer(2, tc_vbo, 0, 2 * sizeof(GL_FLOAT));
-	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
-	glVertexAttribBinding(2, 2);
 
 	ShaderProgram shaderProgram;
 	
@@ -210,16 +243,18 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 	shaderProgram.GenerateProgram();
-	GLuint shader_programme = shaderProgram.getProgramId();
 
-
-	///glEnable(GL_CULL_FACE); // cull face
-	//glCullFace(GL_BACK); // cull back face
-	//glFrontFace(GL_CW); // GL_CCW for counter clock-wise
-
+	Mesh mesh;
+	mesh.LoadFile("Data/Meshes/sussaneobj.obj");
+	glEnable(GL_CULL_FACE); // cull face
+	glCullFace(GL_BACK); // cull back face
+	glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
+	
+	//glDepthFunc(GL_NEAREST);
+	
 		
 	Matrix4x4 world_mat = Matrix4x4::rotation(0, 0, 0.0f);
-	persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14f/4.0f, 800.0f/600.0f);
+	persp_mat = Matrix4x4::perspective(0.1f, 100.0f, 3.14f/3.0f, 800.0f/600.0f);
 	float angle = 1.0f;
 
 	//Light const
@@ -230,13 +265,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	const Vec3 Ks = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 Kd = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 Ka = Vector3f(1.0f, 1.0f, 1.0f);
-	float specular_exponent = 100.0f;
+	float specular_exponent = 50.0f;
 	
 	//Loading image
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	FIBITMAP * dib(0);
 
-	const char * filename = "data/images/Test.png";
+	const char * filename = "data/images/cubTex.png";
 	fif = FreeImage_GetFileType(filename);
 	dib = FreeImage_Load(fif, filename);
 	if (!dib) {
@@ -260,11 +295,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	//#################################
-
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	while (!glfwWindowShouldClose(window))
 	{
+		
 		//angle += 0.005f;
-		Quaterion rot(angle / 180.0f*3.14f, Vector3f(0.0, -1.0, -1.0).normalize());
+		Quaterion rot(angle / 180.0f*3.14f, Vector3f(0.0, 1.0, 0.0).normalize());
 		world_mat = Matrix4x4::translate(0, 0, 0)*rot.getMatrix();
 		view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
@@ -272,34 +309,29 @@ int _tmain(int argc, _TCHAR* argv[])
 		angle += 0.005f;
 		
 		_update_fps_counter(window);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
+		
+		shaderProgram.UseProgram();
+
+		shaderProgram.applyTexture("basic_texutre", 0);
 	
-		glUseProgram(shader_programme);
-
-		glBindTexture(GL_TEXTURE_2D, tex);
-		int tex_loc = glGetUniformLocation(shader_programme, "basic_texture");
-		glUniform1i(tex_loc, 0); // use active texture 0
-		//int matrix_location = glGetUniformLocation(shader_programme, "matrix");
-		//glUniformMatrix4fv(matrix_location, 1, GL_TRUE, send_mat.getMatrixData());
-
-		applyMatrix("mvp_mat", shader_programme, send_mat.getMatrixData());
-		applyMatrix("mv_mat", shader_programme, mv_mat.getMatrixData());
-		applyMatrix("view_mat", shader_programme, view_mat.getMatrixData());	
-		applyVec3("LPos_world", shader_programme, LPositon.getData());
-		applyVec3("Ls", shader_programme, Ls.getData());
-		applyVec3("Ld", shader_programme, Ld.getData());
-		applyVec3("La", shader_programme, La.getData());
-		applyVec3("Ks", shader_programme, Ks.getData());
-		applyVec3("Kd", shader_programme, Kd.getData());
-		applyVec3("Ka", shader_programme, Ka.getData());
+		shaderProgram.apply("mvp_mat", send_mat);
+		shaderProgram.apply("mv_mat", mv_mat);
+		shaderProgram.apply("view_mat", view_mat);
+		shaderProgram.apply("LPos_world", LPositon);
+		shaderProgram.apply("Ls", Ls);
+		shaderProgram.apply("Ld", Ld);
+		shaderProgram.apply("La", La);
+		shaderProgram.apply("Ks", Ks);
+		shaderProgram.apply("Kd", Kd);
+		shaderProgram.apply("Ka", Ka);
+		shaderProgram.apply("spec_power", specular_exponent);
 		
-		applyFloat("spec_power", shader_programme, specular_exponent);
-
-		glBindVertexArray(vao);
+		//glBindVertexArray(vao);
 		// draw points 0-3 from the currently bound VAO with current in-use shader
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		mesh.Draw();
 		// update other events like input handling 
 
 		glfwSwapBuffers(window);
