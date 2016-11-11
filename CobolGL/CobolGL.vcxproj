@@ -113,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CobMath.h" />
+    <ClInclude Include="Include\ControllerRec.h" />
     <ClInclude Include="Include\Exceptions\IOException.h" />
     <ClInclude Include="Include\Logger.h" />
     <ClInclude Include="Include\Math\Matrix.h" />
@@ -127,6 +128,7 @@
   <ItemGroup>
     <ClCompile Include="CobolGL.cpp" />
     <ClCompile Include="CobMath.cpp" />
+    <ClCompile Include="ControllerRec.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Matrix.cpp" />

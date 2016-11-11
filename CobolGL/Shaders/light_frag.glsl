@@ -41,6 +41,6 @@ void main () {
 
   // Texture
   vec4 texel = texture2D(basic_texture, tex_coord);
-  frag_colour = vec4 (vec3(texel)*(Ia+Id)+Is, 1.0);
- //	 frag_colour = vec4(normal_eye, 1.0);
+  frag_colour = vec4 ((Ia+Id)+Is, 1.0);
+  //frag_colour = vec4(gl_FragCoord.z/1.0, 0.0, 0.0, 1.0);
 };

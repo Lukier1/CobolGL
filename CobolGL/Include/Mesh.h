@@ -13,11 +13,19 @@ private:
 	Logger * LOGGER = Logger::getLogger();
 
 	unsigned int verticesCount = 0, trianglesCount = 0; 
+
+	GLfloat * points = NULL;
+	GLfloat * normals = NULL;
+	GLfloat * texcoords = NULL;
+
 	GLuint vao = 0;
+
+
 	void LoadScene(const aiScene * scene)
 	{
 		if (scene->HasMeshes())
 		{
+			LOGGER->Info("Loaded file contains " + std::to_string(scene->mNumMeshes) + " meshes");
 			const aiMesh * mesh = scene->mMeshes[0];
 			LOGGER->Info("Loaded meshes with " + std::to_string(mesh->mNumVertices) + " vertices");
 			verticesCount = mesh->mNumVertices;
@@ -98,10 +106,6 @@ private:
 			glBindVertexBuffer(2, tc_vbo, 0, 2 * sizeof(GL_FLOAT));
 			glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
 			glVertexAttribBinding(2, 2);
-
-			delete[] points;
-			delete[] normals;
-			delete[] texcoords;
 			
 		}
 		else
@@ -127,6 +131,9 @@ public:
 		LoadScene(scene);
 		//delete scene;
 	}
+	~Mesh() {
+		Release();
+	}
 	int GetVao() {
 		return vao;
 	}
@@ -136,7 +143,10 @@ public:
 		glDrawArrays(GL_TRIANGLES, 0, verticesCount);
 	}
 	void Release() {
-
+		delete[] points;
+		delete[] normals;
+		delete[] texcoords;
 	}
+
 };
 

@@ -35,6 +35,30 @@ Matrix4x4 Matrix4x4::scale(float x, float y, float z)
 }
 
 
+Matrix4x4 Matrix4x4::viewMatrix(const Vec<3> &rot, const Vec<3> &eyepos) {
+	Matrix4x4 rotMat = rotation(rot.v[0], rot.v[1], rot.v[2]);
+	
+	Vec3 s = Vector3f(rotMat.getMatrixData()[0], rotMat.getMatrixData()[4], rotMat.getMatrixData()[8]);
+	Vec3 u = Vector3f(rotMat.getMatrixData()[1], rotMat.getMatrixData()[5], rotMat.getMatrixData()[9]);
+	Vec3 f = Vector3f(rotMat.getMatrixData()[2], rotMat.getMatrixData()[6], rotMat.getMatrixData()[10]);
+
+	float T[16] =
+	{
+		1, 0, 0, -eyepos.v[0],
+		0, 1, 0, -eyepos.v[1],
+		0, 0, 1, -eyepos.v[2],
+		0, 0, 0, 1
+	};
+	float M[16] =
+	{
+		s.v[0], s.v[1], s.v[2], 0,
+		u.v[0], u.v[1], u.v[2], 0,
+		-f.v[0], -f.v[1], -f.v[2], 0,
+		0, 0, 0, 1
+	};
+	return Matrix4x4(M)*Matrix4x4(T);
+}
+
 Matrix4x4 Matrix4x4::viewMatrix(const Vec<3> &forw, const Vec<3> &right, const Vec<3> &eye, const Vec<3> &up) {
 	float _v[16] =
 	{
@@ -91,10 +115,16 @@ Matrix4x4 Matrix4x4::perspective(float near, float far, float fov, float aspect)
 	float _v[16] = {
 		near / (range * aspect), 0, 0, 0,
 		0, near / range, 0, 0,
-		0, 0, -2 / (far - near),-(far + near) / (far - near),
+		0, 0, -2 / (far - near), -(far + near) / (far - near),
+		0, 0, -1, 0
+	}; 
+	float _v2[16] = {
+		near / (range * aspect), 0, 0, 0,
+		0, near / range, 0, 0,
+		0, 0, -(far+near) / (far - near), -(2*far*near) / (far - near),
 		0, 0, -1, 0
 	};
-	return Matrix4x4(_v);
+	return Matrix4x4(_v2);
 }
 
 const float * Matrix4x4::getMatrixData() const {

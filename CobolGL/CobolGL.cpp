@@ -6,38 +6,70 @@
 #include "Include\ShaderProgram.h"
 #include "Include\Exceptions\IOException.h"
 #include "Include\Mesh.h"
+#include "Include\ControllerRec.h"
 void glfw_error_callback(int error, const char* description) {
 	Logger::getLogger()->gl_log(error, description);
 }
 
-float camAng = 0;
+double camAng = 0;
 float range = 2.0f;
-Vec3 camPos = Vector3f(0,0,2.0f);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+
+struct Camera {
+	Vec3 position = Vector3f(0, 0, -2.0f);
+	Vec3 rotation = Vector3f(0, 0, 0);
+};
+
+Camera cam;
+void Logic()
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	if (action == GLFW_PRESS)
+	ControllerRec& rec = ControllerRec::GetSingleton();
+//	if (rec.IsDown(GLFW_KEY_ESCAPE))
+		//glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+	if (rec.IsDown(GLFW_KEY_S))
 	{
-		if (key == GLFW_KEY_W)
-		{
-			range -= 1.0f;
-		}
-		if (key == GLFW_KEY_S)
-		{
-			range += 1.0f;
-		}
-		if (key == GLFW_KEY_D)
-		{
-			camAng += 3.14f/12.0f;
-		}
-		if (key == GLFW_KEY_A)
-		{
-			camAng -= 3.14f/12.0f;
-		}
-		camPos.v[0] = range*sin(camAng);
-		camPos.v[2] = range*cos(camAng);
+		float v[] = { 0, 0, -0.001, 0 };
+		Vec4 move4 = Matrix4x4::rotation(cam.rotation.v[0], cam.rotation.v[1], cam.rotation.v[2])*Vec4(v);
+		Vec3 move3 = Vector3f(move4.v[0], move4.v[1], move4.v[2]);
+		cam.position = cam.position +  move3;
+
 	}
+	if (rec.IsDown(GLFW_KEY_W))
+	{
+		float v[] = { 0, 0, 0.001, 0 };
+		Vec4 move4 = Matrix4x4::rotation(cam.rotation.v[0], cam.rotation.v[1], cam.rotation.v[2])*Vec4(v);
+		Vec3 move3 = Vector3f(move4.v[0], move4.v[1], move4.v[2]);
+		cam.position = cam.position + move3;
+	}
+	if (rec.IsDown(GLFW_KEY_A))
+	{
+		float v[] = { -0.001, 0, 0, 0 };
+		Vec4 move4 = Matrix4x4::rotation(cam.rotation.v[0], cam.rotation.v[1], cam.rotation.v[2])*Vec4(v);
+		Vec3 move3 = Vector3f(move4.v[0], move4.v[1], move4.v[2]);
+		cam.position = cam.position + move3;
+
+	}
+	if (rec.IsDown(GLFW_KEY_D))
+	{
+		float v[] = { 0.001,0, 0, 0 };
+		Vec4 move4 = Matrix4x4::rotation(cam.rotation.v[0], cam.rotation.v[1], cam.rotation.v[2])*Vec4(v);
+		Vec3 move3 = Vector3f(move4.v[0], move4.v[1], move4.v[2]);
+		cam.position = cam.position + move3;
+	}
+	cam.rotation.v[1] += rec.GetMoveX()/3.14/400.0;
+	cam.rotation.v[0] += rec.GetMoveY()/3.14/300.0;
+	
+	/*if (rec.IsDown(GLFW_KEY_D))
+	{
+		
+	}
+	if (rec.IsDown(GLFW_KEY_A))
+	{
+		camAng -= 3.14f/12000.0f;
+	}*/
+	//camPos.v[0] = range*sin(camAng);
+	//camPos.v[2] = range*cos(camAng);
+	
 }
 Matrix4x4 view_mat, persp_mat;
 
@@ -204,12 +236,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 	glfwSetErrorCallback(glfw_error_callback);
-	glfwSetKeyCallback(window, key_callback);
+	glfwSetKeyCallback(window, ControllerRec::KeyCallback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	//glfwSetCursorPosCallback(window, ControllerRec::MousePosCallback);
 	glfwMakeContextCurrent(window);
 	
 	// start GLEW extension handler
 	glewExperimental = GL_TRUE;
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	glewInit();
 
 
@@ -245,10 +279,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	shaderProgram.GenerateProgram();
 
 	Mesh mesh;
-	mesh.LoadFile("Data/Meshes/sussaneobj.obj");
+	mesh.LoadFile("Data/Meshes/testpool.obj");
 	glEnable(GL_CULL_FACE); // cull face
 	glCullFace(GL_BACK); // cull back face
-	glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
+	glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 	
 	//glDepthFunc(GL_NEAREST);
 	
@@ -258,10 +292,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	float angle = 1.0f;
 
 	//Light const
-	const Vec3 LPositon = Vector3f(10.0f, 10.0f, 10.0f);
+	const Vec3 LPositon = Vector3f(10.0f, 0.0f, 0.0f);
 	const Vec3 Ls = Vector3f(1, 1, 1);
 	const Vec3 Ld = Vector3f(1.0f, 1.0f, 1.0f);
-	const Vec3 La = Vector3f(0.1f, 0.1f, 0.1f);
+	const Vec3 La = Vector3f(0.4f, 0.4f, 0.4f);
 	const Vec3 Ks = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 Kd = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 Ka = Vector3f(1.0f, 1.0f, 1.0f);
@@ -300,13 +334,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	while (!glfwWindowShouldClose(window))
 	{
 		
-		//angle += 0.005f;
+		angle += 0.001f;
 		Quaterion rot(angle / 180.0f*3.14f, Vector3f(0.0, 1.0, 0.0).normalize());
 		world_mat = Matrix4x4::translate(0, 0, 0)*rot.getMatrix();
-		view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+		//view_mat = Matrix4x4::lookat(camPos, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+		//view_mat = Matrix4x4::viewMatrix(Vector3f(angle , 0, 0), cam.position);
+		view_mat = Matrix4x4::viewMatrix(cam.rotation, cam.position);
 		Matrix4x4 send_mat = persp_mat*view_mat*world_mat;
 		Matrix4x4 mv_mat = view_mat*world_mat;
-		angle += 0.005f;
+		send_mat = persp_mat*mv_mat;
+		//####################
+		//Test
+		float dv[] = { 1, 1, 1, 1 };
+		Vec4 ret = send_mat*Vec4(dv);
+		
+		Vec4 ret2 = send_mat*Vec4(0, 0, 0, 1);
+		//#####################
+		//angle += 0.005f;
 		
 		_update_fps_counter(window);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -335,7 +379,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		// update other events like input handling 
 
 		glfwSwapBuffers(window);
+		
+		
+		
+		ControllerRec::GetSingleton().CleanStates(window);
 		glfwPollEvents();
+		Logic();
+		glfwSetCursorPos(window, 400.0, 300.0);
 	}
 	shaderProgram.Release();
 	FreeImage_Unload(dib);

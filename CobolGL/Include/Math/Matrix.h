@@ -13,9 +13,11 @@ public:
 	static Matrix4x4 translate(float x, float y, float z);
 	static Matrix4x4 scale(float x, float y, float z);
 	static Matrix4x4 viewMatrix(const Vec<3> &forw, const Vec<3> &right, const Vec<3> &eye, const Vec<3> &up);
+	static Matrix4x4 viewMatrix(const Vec<3> &rot, const Vec<3> &pos);
 	static Matrix4x4 lookat(const Vec<3> &eyepos, const Vec<3> &point, const Vec<3> &up);
 	static Matrix4x4 rotation(float x, float y, float z);
 	static Matrix4x4 perspective(float near, float far, float fov, float aspect);
+	
 	const float * getMatrixData() const;
 	Matrix4x4 operator +(const Matrix4x4& oth) const;
 	Matrix4x4 operator -(const Matrix4x4& oth) const;
