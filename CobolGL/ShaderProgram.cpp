@@ -107,9 +107,14 @@ void ShaderProgram::apply(std::string locator, float val) {
 	glUniform1f(location, val);
 
 }
-void ShaderProgram::applyTexture(std::string locator, GLuint texId) {
-	GLuint location = glGetUniformLocation(programId, locator.c_str());
-	glUniform1i(location, texId);
+void ShaderProgram::applyTexture(TextureType texType, GLuint texId)
+{
+	glUniform1i((GLint)texType, texId);
+}
+void ShaderProgram::applyTexture(GLuint texNum, GLuint texId) {
+	///GLuint location = glGetUniformLocation(programId, locator.c_str());
+	//std::cout << "FIND LOC " << location << std::endl;
+	glUniform1i(texNum, texId);
 }
 
 void ShaderProgram::UseProgram()

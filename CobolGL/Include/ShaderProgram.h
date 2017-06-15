@@ -3,6 +3,8 @@
 #include "Resource.h"
 #include "Math\Matrix.h"
 #include "Math\Vec.h"
+#include "TextureType.h"
+
 class ShaderProgram : public Resource
 {
 public:
@@ -28,7 +30,8 @@ public:
 	void apply(std::string locator, const Matrix4x4 &mat);
 	void apply(std::string locator, const Vec3 &vec);
 	void apply(std::string locator, float val);
-	void applyTexture(std::string locator, GLuint texId);
+	void applyTexture(GLuint texNum, GLuint texId);
+	void applyTexture(TextureType texType, GLuint texId);
 private:
 	static const unsigned short TYPE_COUNT = 2;
 

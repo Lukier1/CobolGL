@@ -109,6 +109,7 @@ struct Vec {
 	}
 };
 
+typedef Vec<2> Vec2;
 typedef Vec<3> Vec3;
 typedef Vec<4> Vec4;
 

@@ -1,7 +1,7 @@
 #version 400
 
 
-uniform sampler2D basic_texture;
+layout(binding=0) uniform sampler2D diffuse_texture;
 
 uniform vec3 LPos_world, Ls, Ld, La; // light position, specular, diffuse, ambient
 uniform vec3 Ks, Kd, Ka; // color specular, diffuse, ambient
@@ -40,7 +40,6 @@ void main () {
   
 
   // Texture
-  vec4 texel = texture2D(basic_texture, tex_coord);
-  frag_colour = vec4 ((Ia+Id)+Is, 1.0);
-  //frag_colour = vec4(gl_FragCoord.z/1.0, 0.0, 0.0, 1.0);
+  vec4 texel = texture2D(diffuse_texture, tex_coord);
+  frag_colour = vec4 ((Ia+Id)*texel.xyz+Is, 1.0);
 };

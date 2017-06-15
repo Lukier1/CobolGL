@@ -7,6 +7,8 @@
 #include "Include\Exceptions\IOException.h"
 #include "Include\Mesh.h"
 #include "Include\ControllerRec.h"
+#include "Include\ModelLoader.h"
+
 void glfw_error_callback(int error, const char* description) {
 	Logger::getLogger()->gl_log(error, description);
 }
@@ -15,8 +17,8 @@ double camAng = 0;
 float range = 2.0f;
 
 struct Camera {
-	Vec3 position = Vector3f(0, 0, -2.0f);
-	Vec3 rotation = Vector3f(0, 0, 0);
+	Vec3 position = Vector3f(0, 5.0f, -5.0f);
+	Vec3 rotation = Vector3f(0.6f, 0, 0);
 };
 
 Camera cam;
@@ -278,11 +280,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	shaderProgram.GenerateProgram();
 
-	Mesh mesh;
-	mesh.LoadFile("Data/Meshes/testpool.obj");
-	glEnable(GL_CULL_FACE); // cull face
-	glCullFace(GL_BACK); // cull back face
-	glFrontFace(GL_CW); // GL_CCW for counter clock-wise
+	ModelLoader ml("Data/Meshes/testpool.obj");
+	// Mesh mesh;
+	//mesh.LoadFile("Data/Meshes/testpool.obj");
+	//glEnable(GL_CULL_FACE); // cull face
+	//glCullFace(GL_BACK); // cull back face
+	//glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 	
 	//glDepthFunc(GL_NEAREST);
 	
@@ -292,20 +295,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	float angle = 1.0f;
 
 	//Light const
-	const Vec3 LPositon = Vector3f(10.0f, 0.0f, 0.0f);
+	const Vec3 LPositon = Vector3f(10.0f, 40.0f, 0.0f);
 	const Vec3 Ls = Vector3f(1, 1, 1);
 	const Vec3 Ld = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 La = Vector3f(0.4f, 0.4f, 0.4f);
 	const Vec3 Ks = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 Kd = Vector3f(1.0f, 1.0f, 1.0f);
 	const Vec3 Ka = Vector3f(1.0f, 1.0f, 1.0f);
-	float specular_exponent = 50.0f;
+	float specular_exponent = 100.0f;
 	
 	//Loading image
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	FIBITMAP * dib(0);
 
-	const char * filename = "data/images/cubTex.png";
+	const char * filename = "data/images/box.png";
 	fif = FreeImage_GetFileType(filename);
 	dib = FreeImage_Load(fif, filename);
 	if (!dib) {
@@ -323,9 +326,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexImage2D(
 		GL_TEXTURE_2D, 0, GL_RGBA,
-		x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		x, y, 0, GL_BGRA, GL_UNSIGNED_BYTE, image_data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	//#################################
@@ -358,8 +361,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		
 		shaderProgram.UseProgram();
 
-		shaderProgram.applyTexture("basic_texutre", 0);
-	
+		shaderProgram.applyTexture(DIFFUSE_TEXTURE, tex);
+	 
 		shaderProgram.apply("mvp_mat", send_mat);
 		shaderProgram.apply("mv_mat", mv_mat);
 		shaderProgram.apply("view_mat", view_mat);
@@ -375,12 +378,19 @@ int _tmain(int argc, _TCHAR* argv[])
 		//glBindVertexArray(vao);
 		// draw points 0-3 from the currently bound VAO with current in-use shader
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
-		mesh.Draw();
+		auto meshList = ml.getMeshList();
+		for (Mesh * mesh : meshList)
+		{
+			if (mesh->getMaterialIndex() != 0)
+			{
+				ml.getMaterialList()[mesh->getMaterialIndex()]->ApplyParams(shaderProgram);
+			}
+			//mesh->getMaterialIndex
+			mesh->Draw();
+		}
 		// update other events like input handling 
 
 		glfwSwapBuffers(window);
-		
-		
 		
 		ControllerRec::GetSingleton().CleanStates(window);
 		glfwPollEvents();

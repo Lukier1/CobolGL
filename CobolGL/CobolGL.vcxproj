@@ -72,12 +72,16 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;glew.lib;freeimage.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG_LAPTOP|Win32'">
     <ClCompile>
@@ -115,13 +119,18 @@
     <ClInclude Include="Include\CobMath.h" />
     <ClInclude Include="Include\ControllerRec.h" />
     <ClInclude Include="Include\Exceptions\IOException.h" />
+    <ClInclude Include="Include\Material.h" />
     <ClInclude Include="Include\Logger.h" />
     <ClInclude Include="Include\Math\Matrix.h" />
     <ClInclude Include="Include\Math\Quaterion.h" />
     <ClInclude Include="Include\Math\Vec.h" />
     <ClInclude Include="Include\Mesh.h" />
+    <ClInclude Include="Include\Exceptions\MissingResourceException.h" />
+    <ClInclude Include="Include\ModelLoader.h" />
     <ClInclude Include="Include\Resource.h" />
     <ClInclude Include="Include\ShaderProgram.h" />
+    <ClInclude Include="Include\Texture.h" />
+    <ClInclude Include="Include\TextureType.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -129,7 +138,11 @@
     <ClCompile Include="CobolGL.cpp" />
     <ClCompile Include="CobMath.cpp" />
     <ClCompile Include="ControllerRec.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Quaterion.cpp" />
