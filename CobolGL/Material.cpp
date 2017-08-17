@@ -66,8 +66,7 @@ void Material::SetTexture(const Texture &tex)
 
 void Material::ApplyParams(ShaderProgram & program)
 {
-	//Apply vec3 params
-	
+	GLuint shaderFlag = 0;
 	for (auto iter = mVec3Map.begin(); iter != mVec3Map.end(); ++iter)
 	{
 		
@@ -96,9 +95,15 @@ void Material::ApplyParams(ShaderProgram & program)
 	
 	for (auto iter = mTextureMap.begin(); iter != mTextureMap.end(); ++iter)
 	{
-	
-		glBindTexture(GL_TEXTURE_2D, iter->second);
-		glActiveTexture(GL_TEXTURE0);
-		//program.applyTexture(iter->first, );
+		program.applyTexture(iter->first, iter->second);
+		switch (iter->first) {
+		case NORMALS_TEXTURE:
+			shaderFlag = shaderFlag | NOMRALS_MAP_MODE;
+			break;
+		case SPECULAR_TEXTURE:
+			shaderFlag = shaderFlag | SPECULAR_MAP_MODE;
+			break;
+		}
 	}
+	program.apply("shader_flag", shaderFlag);
 }

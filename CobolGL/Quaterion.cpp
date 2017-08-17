@@ -22,10 +22,20 @@ Quaterion::Quaterion() {
 }
 
 Quaterion Quaterion::operator + (const Quaterion& oth) const {
-	return Quaterion();
+	Quaterion out;
+	for (int i = 0; i < 4; ++i)
+	{
+		out.q[i] = oth.q[i] + q[i];
+	}
+	return out;
 }
 Quaterion Quaterion::operator - (const Quaterion& oth) const {
-	return Quaterion();
+	Quaterion out;
+	for (int i = 0; i < 4; ++i)
+	{
+		out.q[i] = q[i] - oth.q[i];
+	}
+	return out;
 }
 Quaterion Quaterion::operator * (const Quaterion& oth) const {
 	Quaterion t;

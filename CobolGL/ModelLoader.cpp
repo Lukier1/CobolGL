@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Include\ModelLoader.h"
 #include "Include\Mesh.h"
+
+#include "Include\Exceptions\MissingResourceException.h"
+
 ModelLoader::ModelLoader()
 {
 }
@@ -26,7 +29,7 @@ void ModelLoader::LoadFile(const std::string & filename)
 {
 	Assimp::Importer importer;
 
-	const aiScene * scene = importer.ReadFile(filename,0);
+	const aiScene * scene = importer.ReadFile(filename, aiProcess_CalcTangentSpace);
 	
 	if (!scene) {
 		LOGGER->Error("Can't load mesh: " + filename);
@@ -34,17 +37,19 @@ void ModelLoader::LoadFile(const std::string & filename)
 	else
 	{
 		LOGGER->Info("Mesh loading success: " + filename);
+		mFilename = filename;
 	}
+	
 	
 	//Test properties
 	if (scene->HasMaterials())
 	{
-		for (int iMat = 0; iMat < scene->mNumMaterials; ++iMat)
+		for (unsigned int iMat = 0; iMat < scene->mNumMaterials; ++iMat)
 		{
 			aiMaterial * material = scene->mMaterials[iMat];
 			Material * newMaterial = new Material();
-			std::cout << "New Material #####################" << std::endl;
-			for (int z = 0; z < material->mNumProperties; ++z)
+			LOGGER->Info("New Material #####################");
+			for (unsigned int z = 0; z < material->mNumProperties; ++z)
 			{
 				std::string out_data = "";
 				const aiMaterialProperty * prop = material->mProperties[z];
@@ -104,18 +109,13 @@ void ModelLoader::LoadFile(const std::string & filename)
 						break;
 					}
 				}
-				std::cout << prop->mKey.data << " : " << out_data << std::endl;
+				LOGGER->Info(std::string(prop->mKey.data) +  " : " + out_data);
 			}
-			if (material->GetTextureCount(aiTextureType::aiTextureType_DIFFUSE))
-			{
-				std::cout << "Material has diffuse texture: ";
-				aiString path; 
-				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-				std::cout << path.data << std::endl;
-				
-				mTexList.push_back(new Texture(std::string(path.data), DIFFUSE_TEXTURE));
-				newMaterial->SetTexture(*mTexList.back());
-			}
+
+			LoadTexture(material, aiTextureType_DIFFUSE, DIFFUSE_TEXTURE, newMaterial, "diffuse");
+			LoadTexture(material, aiTextureType_SPECULAR, SPECULAR_TEXTURE, newMaterial, "specular");
+			LoadTexture(material, aiTextureType_HEIGHT, NORMALS_TEXTURE, newMaterial, "normals");
+
 			mMateriaList.push_back(newMaterial);
 		}
 	}
@@ -161,5 +161,25 @@ void ModelLoader::LoadScene(const aiScene * scene)
 	else
 	{
 		LOGGER->Error("Can't load mesh from scene");
+	}
+}
+
+void ModelLoader::LoadTexture(const aiMaterial * material, aiTextureType texType, TextureType outTexType, Material * newMaterial, std::string texTypeName)
+{
+	if (material->GetTextureCount(texType))
+	{
+		LOGGER->Info("Material has " + texTypeName + " texture ");
+		aiString path;
+		material->GetTexture(texType, 0, &path);
+		LOGGER->Info(path.data);
+		try {
+			Texture * tex = new Texture(std::string(path.data), outTexType);
+			mTexList.push_back(tex);
+			newMaterial->SetTexture(*tex);
+		}
+		catch (MissingResourceException e)
+		{
+			LOGGER->Error("Loading model: " + mFilename + " Can't load " + texTypeName + " texture. ");
+		}
 	}
 }

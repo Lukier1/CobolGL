@@ -107,14 +107,58 @@ void ShaderProgram::apply(std::string locator, float val) {
 	glUniform1f(location, val);
 
 }
+void ShaderProgram::apply(std::string locator, GLuint val)
+{
+	GLuint location = glGetUniformLocation(programId, locator.c_str());
+	glUniform1ui(location, val);
+}
+void ShaderProgram::apply(std::string locator, int val)
+{
+	GLuint location = glGetUniformLocation(programId, locator.c_str());
+	glUniform1i(location, val);
+}
 void ShaderProgram::applyTexture(TextureType texType, GLuint texId)
 {
-	glUniform1i((GLint)texType, texId);
+	std::string locator;
+	switch (texType)
+	{
+	case DIFFUSE_TEXTURE:
+		locator = "diffuse_texture";
+		break;
+	case SPECULAR_TEXTURE:
+		locator = "specular_texture";
+		break;
+	case NORMALS_TEXTURE:
+		locator = "normals_texture";
+		break;
+	default:
+		break;
+	}
+
+	apply(locator, (int)texType);	
+	
+	switch (texType) {
+	case DIFFUSE_TEXTURE:
+		glActiveTexture(GL_TEXTURE0);
+		break;
+	case SPECULAR_TEXTURE:
+		glActiveTexture(GL_TEXTURE1);
+		break;
+	case NORMALS_TEXTURE:
+		glActiveTexture(GL_TEXTURE2);
+		break;
+	default:
+		glActiveTexture(GL_TEXTURE0);
+	}
+	
+	glBindTexture(GL_TEXTURE_2D, texId);
 }
+
+//TODO: Delete
 void ShaderProgram::applyTexture(GLuint texNum, GLuint texId) {
-	///GLuint location = glGetUniformLocation(programId, locator.c_str());
+	//GLuint location = glGetUniformLocation(programId, locator.c_str());
 	//std::cout << "FIND LOC " << location << std::endl;
-	glUniform1i(texNum, texId);
+	//glUniform1i(texNum, texId);
 }
 
 void ShaderProgram::UseProgram()

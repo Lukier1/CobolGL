@@ -30,6 +30,8 @@ public:
 	void apply(std::string locator, const Matrix4x4 &mat);
 	void apply(std::string locator, const Vec3 &vec);
 	void apply(std::string locator, float val);
+	void apply(std::string locator, GLuint val);
+	void apply(std::string locator, int val);
 	void applyTexture(GLuint texNum, GLuint texId);
 	void applyTexture(TextureType texType, GLuint texId);
 private:

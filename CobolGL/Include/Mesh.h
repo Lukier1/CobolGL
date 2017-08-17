@@ -17,6 +17,7 @@ private:
 	GLfloat * points = NULL;
 	GLfloat * normals = NULL;
 	GLfloat * texcoords = NULL;
+	GLfloat * tangents = NULL;
 
 	GLuint vao = 0;
 

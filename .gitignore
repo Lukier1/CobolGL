@@ -51,7 +51,7 @@ artifacts/
 *_i.h
 *.ilk
 *.meta
-*.obj
+CobolGL/Debug/*.obj
 *.pch
 *.pdb
 *.pgc
@@ -252,3 +252,6 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Model
+*.mtl

@@ -19,7 +19,10 @@ private:
 	Logger * LOGGER = Logger::getLogger();
 	
 	void LoadScene(const aiScene * scene);
+	std::string mFilename;
 	std::vector<Mesh*> mMeshesList;
 	std::vector<Material*> mMateriaList;
 	std::vector<Texture*> mTexList;
+
+	void LoadTexture(const aiMaterial * material, aiTextureType texType, TextureType outTexType, Material * newMaterial,  std::string texTypeName);
 };

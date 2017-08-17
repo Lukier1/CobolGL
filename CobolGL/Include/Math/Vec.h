@@ -56,6 +56,15 @@ struct Vec {
 		return res;
 	}
 
+	Vec operator *(const float oth) const {
+		Vec<N> res;
+		for (int i = 0; i < N; ++i)
+		{
+			res.v[i] = v[i]*oth;
+		}
+		return res;
+	}
+
 	Vec normalizeVec3() const
 	{
 		float d = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
@@ -103,7 +112,7 @@ struct Vec {
 			v[0] * oth.v[2] - v[2] * oth.v[0],
 			v[0] * oth.v[1] - v[1] * oth.v[0]
 			);
-	}
+	}	
 	const float * getData() const {
 		return v;
 	}

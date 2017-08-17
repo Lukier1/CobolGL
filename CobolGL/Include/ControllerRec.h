@@ -12,6 +12,7 @@ public:
 	static ControllerRec& GetSingleton();
 	
 	static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);
+	static void MouseButtonCallback(GLFWwindow * window, int button, int action, int mode);
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
 private:
 

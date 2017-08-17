@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Include\Mesh.h"
+#include "Include\Math\Vec.h"
 
 void Mesh::LoadScene(const aiScene * scene)
 {
@@ -27,6 +28,7 @@ void Mesh::LoadMesh(const aiMesh * mesh) {
 	points = new GLfloat[3 * 3 * mesh->mNumFaces];
 	normals = new GLfloat[3 * 3 * mesh->mNumFaces];
 	texcoords = new GLfloat[2 * 3 * mesh->mNumFaces];
+	tangents =  new GLfloat[4 * 3 * mesh->mNumFaces];
 	verticesCount = 3 * mesh->mNumFaces;
 
 	materialIndex = mesh->mMaterialIndex;
@@ -61,6 +63,33 @@ void Mesh::LoadMesh(const aiMesh * mesh) {
 				texcoords[memInd * 2 + 1] = (GLfloat)vt->y;
 
 			}
+			if (mesh->HasTangentsAndBitangents())
+			{
+
+				const aiVector3D* vt = &(mesh->mTangents[vertInd]);
+				const aiVector3D* vn = &(mesh->mNormals[vertInd]);
+				const aiVector3D* vbt = &(mesh->mBitangents[vertInd]);
+	
+				Vec3 tang = Vector3f(vt->x, vt->y, vt->z);
+				Vec3 norm = Vector3f(vn->x, vn->y, vn->z);
+				Vec3 bitang = Vector3f(vbt->x, vbt->y, vbt->z);
+
+				Vec3 tang_i = ( tang - (norm * norm.dot(tang)) ).normalizeVec3();
+				float det = (tang.cross(norm)).dot(bitang);
+
+				if (det < 0.0f)
+				{
+					det = -1.0f;
+				}
+				else
+				{
+					det = 1.0f;
+				}
+				tangents[memInd * 4] = (GLfloat)tang_i.v[0];
+				tangents[memInd * 4 + 1] = (GLfloat)tang_i.v[1];
+				tangents[memInd * 4 + 2] = (GLfloat)tang_i.v[2];
+				tangents[memInd * 4 + 3] = (GLfloat)det;
+			}
 			++memInd;
 		}
 	}
@@ -77,6 +106,11 @@ void Mesh::LoadMesh(const aiMesh * mesh) {
 	glGenBuffers(1, &tc_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, tc_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 2 * verticesCount  * sizeof(float), texcoords, GL_STATIC_DRAW);
+	GLuint tan_vbo = 0;
+	glGenBuffers(1, &tan_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, tan_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 4 * verticesCount * sizeof(float), tangents, GL_STATIC_DRAW);
+
 
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0);
@@ -91,6 +125,10 @@ void Mesh::LoadMesh(const aiMesh * mesh) {
 	glBindVertexBuffer(2, tc_vbo, 0, 2 * sizeof(GL_FLOAT));
 	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
 	glVertexAttribBinding(2, 2);
+	glEnableVertexAttribArray(3);
+	glBindVertexBuffer(3, tan_vbo, 0, 4 * sizeof(GL_FLOAT));
+	glVertexAttribFormat(3, 4, GL_FLOAT, GL_FALSE, 0);
+	glVertexAttribBinding(3, 3);
 
 }
 void Mesh::GenBuffers()
@@ -146,6 +184,8 @@ void Mesh::Release() {
 	normals = nullptr;
 	delete[] texcoords;
 	texcoords = nullptr;
+	delete[] tangents;
+	tangents = nullptr;
 }
 
 

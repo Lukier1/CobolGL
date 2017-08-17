@@ -133,11 +133,13 @@
     <ClInclude Include="Include\TextureType.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Include\WindowGL.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CobolGL.cpp" />
     <ClCompile Include="CobMath.cpp" />
     <ClCompile Include="ControllerRec.cpp" />
+    <ClCompile Include="WindowGL.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ModelLoader.cpp" />

@@ -1,5 +1,5 @@
 # Blender MTL File: 'textpool.blend'
-# Material Count: 3
+# Material Count: 5
 
 newmtl Material
 Ns 96.078431
@@ -11,6 +11,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd E:\Projects\C++\CobolGL\CobolGL\Data\Images\box.png
+map_Ks E:\\Projects\\C++\\CobolGL\\CobolGL\\Data\\Images\\boxspec.png
 
 newmtl Material.001
 Ns 96.078431
@@ -23,6 +24,17 @@ d 1.000000
 illum 2
 map_Kd E:\Projects\C++\CobolGL\CobolGL\Data\Images\barrel.png
 
+newmtl Material.001_barrel.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd E:\Projects\C++\CobolGL\CobolGL\Data\Images\barrel.jpg
+
 newmtl Material.002
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
@@ -33,3 +45,16 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd E:\Projects\C++\CobolGL\CobolGL\Data\Images\floor.png
+map_Ks E:\\Projects\\C++\\CobolGL\\CobolGL\\Data\\Images\\floorspec.png
+
+newmtl Material.003
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\Lukier\Documents\Models\norTex\154.PNG
+map_Bump -bm -1.500000 C:\\Users\\Lukier\\Documents\\Models\\norTex\\154_norm.JPG

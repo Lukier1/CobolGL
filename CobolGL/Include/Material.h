@@ -20,6 +20,10 @@ public:
 
 	void ApplyParams(ShaderProgram &program);
 private:
+	static const GLuint NOMRALS_MAP_MODE = 0x1;
+	static const GLuint SPECULAR_MAP_MODE = 0x2;
+
+
 	std::map<PARAM_TYPE, Vec3> mVec3Map;
 	std::map<PARAM_TYPE, float> mFloatMap;
 	std::map<TextureType, GLuint> mTextureMap;
