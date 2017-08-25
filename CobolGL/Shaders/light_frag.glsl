@@ -32,7 +32,7 @@ void main () {
 	vec3 Ia = La * Ka;
     //Diffuse intesity
 	float dot_prod = 0;
-	vec3 normal_tan = texture(normals_texture, tex_coord).rgb;
+	vec3 normal_tan = texture(normals_texture, tex_coord);
 	normal_tan = normalize (normal_tan * 2.0 - 1.0);
 	
 	vec3 LPos_eye = vec3( view_mat * vec4(LPos_world,1.0));

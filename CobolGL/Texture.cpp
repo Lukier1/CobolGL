@@ -40,6 +40,8 @@ Texture::Texture(std::string filename, TextureType type)
 
 	FREE_IMAGE_TYPE imageType = FreeImage_GetImageType(dib);
 
+	
+
 	if (FreeImage_GetBPP(dib) == 32) {
 		glTexImage2D(
 			GL_TEXTURE_2D, 0, GL_RGBA,

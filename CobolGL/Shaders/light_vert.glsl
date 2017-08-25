@@ -25,7 +25,7 @@ void main() {
 	
 
 	vec3 campos_wor = (inverse(view_mat)*vec4(0.0,0.0,0.0,1.0)).xyz;
-	vec3 light_dir_wor = vec3(0,0,-1.0f);//normalize(LPos_world - vec3(vec4(vertex_position, 1.0) * world_mat));
+	vec3 light_dir_wor = -normalize(LPos_world - vec3(vec4(vertex_position, 1.0) * world_mat));
 
 	vec3 campos_loc = vec3(inverse(world_mat) * vec4(campos_wor,1.0));
 	vec3 light_dir_loc = vec3(inverse(world_mat) * vec4(light_dir_wor,0.0));
